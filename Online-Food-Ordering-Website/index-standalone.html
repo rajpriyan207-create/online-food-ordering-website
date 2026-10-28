@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Online Food Ordering Website - frontend demonstration built with HTML, CSS and JavaScript.">
+  <title>Online Food Ordering Website</title>
+  <style>
+/* ===== Online Food Ordering Website - Stylesheet ===== */
+:root {
+  --primary: #e8590c;
+  --primary-dark: #c2410c;
+  --bg: #fff8f1;
+  --card: #ffffff;
+  --text: #2b2118;
+  --muted: #6b5d52;
+  --border: #ecdccd;
+  --danger: #c0292b;
+  --success: #2f9e44;
+  --radius: 12px;
+  --shadow: 0 2px 10px rgba(80, 40, 10, 0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; scroll-padding-top: 70px; }
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+img { max-width: 100%; display: block; }
+button, input, select, textarea { font: inherit; }
+.container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--card); border-bottom: 1px solid var(--border); box-shadow: var(--shadow);
+}
+.header-inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text); font-size: 1.2rem; }
+.brand strong { color: var(--primary); }
+.brand-mark {
+  width: 34px; height: 34px; border-radius: 50%; background: var(--primary); color: #fff;
+  display: grid; place-items: center; font-weight: 700;
+}
+.nav { display: flex; gap: 18px; }
+.nav a { text-decoration: none; color: var(--muted); font-weight: 600; }
+.nav a:hover { color: var(--primary); }
+.cart-link {
+  text-decoration: none; background: var(--primary); color: #fff; font-weight: 600;
+  padding: 8px 14px; border-radius: 999px; display: flex; align-items: center; gap: 8px;
+}
+.cart-badge {
+  background: #fff; color: var(--primary-dark); border-radius: 999px;
+  min-width: 24px; height: 24px; padding: 0 6px; display: grid; place-items: center; font-size: .85rem;
+}
+
+.demo-banner {
+  background: #fff3bf; color: #5f4b00; text-align: center; padding: 8px 12px;
+  font-size: .9rem; border-bottom: 1px solid #f1dc84;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #e8590c, #f59f00);
+  color: #fff; padding: 36px 0; text-align: center;
+}
+.hero h1 { font-size: clamp(1.5rem, 4vw, 2.4rem); margin-bottom: 6px; }
+.hero p { opacity: .95; }
+
+/* Layout */
+.layout { display: grid; grid-template-columns: 1fr 380px; gap: 24px; padding-top: 24px; padding-bottom: 40px; align-items: start; }
+h2 { font-size: 1.3rem; margin-bottom: 14px; }
+
+/* Toolbar */
+.toolbar { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+#searchInput {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius);
+  background: #fff; outline: none;
+}
+#searchInput:focus, .field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--primary); box-shadow: 0 0 0 3px rgba(232, 89, 12, .15);
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  border: 1px solid var(--border); background: #fff; color: var(--text);
+  padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: .9rem;
+}
+.chip:hover { border-color: var(--primary); }
+.chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.result-count { color: var(--muted); font-size: .9rem; margin-bottom: 10px; }
+
+/* Food grid */
+.food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+.food-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow);
+  transition: transform .15s;
+}
+.food-card:hover { transform: translateY(-3px); }
+.food-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; background: #f3e7da; }
+.food-body { padding: 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.food-body h3 { font-size: 1.05rem; }
+.tag {
+  align-self: flex-start; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+  background: #ffe8d6; color: var(--primary-dark); padding: 2px 8px; border-radius: 999px; font-weight: 600;
+}
+.food-body p { font-size: .88rem; color: var(--muted); flex: 1; }
+.food-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.price { font-weight: 700; font-size: 1.1rem; }
+.no-results, .empty-msg {
+  text-align: center; color: var(--muted); padding: 18px 10px;
+  background: #fff; border: 1px dashed var(--border); border-radius: var(--radius);
+}
+
+/* Buttons */
+.btn {
+  border: none; border-radius: 8px; padding: 9px 16px; cursor: pointer; font-weight: 600;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-block { width: 100%; padding: 12px; margin-top: 8px; }
+.btn-link { background: none; color: var(--danger); text-decoration: underline; padding: 4px; }
+.btn:focus-visible, .chip:focus-visible, .qty-btn:focus-visible { outline: 3px solid #1c7ed6; outline-offset: 2px; }
+
+/* Side panels */
+.side { display: flex; flex-direction: column; gap: 20px; }
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+
+/* Cart */
+.cart-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.cart-item { display: grid; grid-template-columns: 56px 1fr auto; gap: 10px; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.cart-item img { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; }
+.cart-item h3 { font-size: .95rem; }
+.cart-item .unit { font-size: .8rem; color: var(--muted); }
+.cart-right { text-align: right; }
+.line-total { font-weight: 700; margin-bottom: 4px; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.qty-btn { width: 30px; height: 30px; border: none; background: #fff5ec; cursor: pointer; font-size: 1.1rem; color: var(--primary-dark); }
+.qty-btn:hover { background: #ffe3cc; }
+.qty-num { min-width: 30px; text-align: center; font-weight: 600; }
+.remove-btn { display: block; margin: 4px 0 0 auto; background: none; border: none; color: var(--danger); font-size: .8rem; cursor: pointer; text-decoration: underline; }
+.cart-footer { text-align: right; margin-top: 10px; }
+
+/* Summary */
+.summary-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.summary-table th, .summary-table td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--border); }
+.summary-table th:nth-child(n+2), .summary-table td:nth-child(n+2) { text-align: right; }
+.totals { margin-top: 10px; }
+.totals div { display: flex; justify-content: space-between; padding: 4px 0; }
+.totals .grand { border-top: 2px solid var(--text); margin-top: 4px; padding-top: 8px; font-size: 1.15rem; font-weight: 700; color: var(--primary-dark); }
+.hint { font-size: .82rem; color: var(--muted); margin-top: 6px; }
+
+/* Form */
+.field { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; }
+.field label { font-weight: 600; font-size: .9rem; }
+.field input, .field select, .field textarea {
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; outline: none; width: 100%;
+}
+.field.invalid input, .field.invalid select, .field.invalid textarea { border-color: var(--danger); background: #fff5f5; }
+.error { color: var(--danger); font-size: .82rem; min-height: 0; }
+.form-error { display: block; margin-bottom: 4px; font-weight: 600; }
+
+/* Modal */
+.modal { position: fixed; inset: 0; background: rgba(0, 0, 0, .55); display: grid; place-items: center; padding: 16px; z-index: 100; overflow-y: auto; }
+.modal[hidden] { display: none; }
+.modal-box { background: #fff; border-radius: 16px; max-width: 480px; width: 100%; padding: 24px; text-align: center; max-height: 92vh; overflow-y: auto; }
+.tick { width: 56px; height: 56px; border-radius: 50%; background: var(--success); color: #fff; font-size: 1.8rem; display: grid; place-items: center; margin: 0 auto 10px; }
+.modal-box .summary-table { margin: 12px 0; text-align: left; }
+.conf-total { font-size: 1.1rem; margin-bottom: 6px; }
+.conf-meta { font-size: .88rem; color: var(--muted); margin-bottom: 6px; }
+.modal-box .btn { margin-top: 14px; }
+
+/* Footer */
+.site-footer { background: #2b2118; color: #e9dccd; text-align: center; padding: 20px 0; font-size: .88rem; }
+
+/* Responsive */
+@media (max-width: 960px) {
+  .layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .nav { display: none; }
+  .food-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .food-body { padding: 9px; }
+  .food-body p { display: none; }
+  .food-foot { flex-wrap: wrap; gap: 6px; }
+  .hero { padding: 24px 0; }
+  .modal-box { padding: 18px; }
+}
+@media (max-width: 360px) {
+  .food-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+  <noscript><p style="padding:16px;background:#ffe3e3;color:#7a0b0b;font:16px Arial">JavaScript is turned off in your browser. Please enable JavaScript to use this website.</p></noscript>
+  <div id="loadError" hidden style="padding:16px;background:#ffe3e3;color:#7a0b0b;font:16px/1.5 Arial;border-bottom:2px solid #c0292b">
+    <strong>The website files could not be loaded.</strong> Please <b>extract (unzip) the whole folder first</b>, keep the <code>css</code>, <code>js</code> and <code>images</code> folders next to <code>index.html</code>, and then open <code>index.html</code>. Do not open it from inside the ZIP file. Alternatively, open <code>index-standalone.html</code>, which works as a single file.
+  </div>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#top" class="brand" aria-label="Online Food Ordering Website">
+        <span class="brand-mark" aria-hidden="true">F</span>
+        <span>Food<strong>Express</strong></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#menu">Menu</a>
+        <a href="#checkout">Checkout</a>
+      </nav>
+      <a href="#cart" class="cart-link" id="cartLink" aria-label="Go to shopping cart">
+        Cart <span class="cart-badge" id="cartBadge">0</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="demo-banner" role="note">
+    Frontend demonstration only &ndash; no real orders are placed and no payment is processed.
+  </div>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container">
+        <h1>Hungry? Order your favourite food</h1>
+        <p>Browse the menu, search by name, filter by category and build your order.</p>
+      </div>
+    </section>
+
+    <div class="container layout">
+      <!-- MENU -->
+      <section class="menu-section" id="menu" aria-labelledby="menuTitle">
+        <h2 id="menuTitle">Food Menu</h2>
+
+        <div class="toolbar">
+          <label class="visually-hidden" for="searchInput">Search food by name</label>
+          <input type="search" id="searchInput" placeholder="Search food by name..." autocomplete="off">
+          <div class="chips" id="categoryFilters" role="group" aria-label="Filter by category"></div>
+        </div>
+
+        <p class="result-count" id="resultCount" aria-live="polite"></p>
+        <div class="food-grid" id="foodGrid"></div>
+        <p class="no-results" id="noResults" hidden>No food items match your search. Try another name or category.</p>
+      </section>
+
+      <!-- CART + CHECKOUT -->
+      <aside class="side" aria-label="Cart and checkout">
+        <section class="panel" id="cart" aria-labelledby="cartTitle">
+          <h2 id="cartTitle">Your Cart</h2>
+          <p class="empty-msg" id="emptyCart">Your cart is empty. Add some delicious food from the menu!</p>
+          <ul class="cart-list" id="cartList"></ul>
+          <div class="cart-footer" id="cartFooter" hidden>
+            <button type="button" class="btn btn-link" id="clearCartBtn">Clear cart</button>
+          </div>
+        </section>
+
+        <section class="panel" id="summary" aria-labelledby="summaryTitle">
+          <h2 id="summaryTitle">Order Summary</h2>
+          <table class="summary-table" id="summaryTable" hidden>
+            <thead>
+              <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody id="summaryBody"></tbody>
+          </table>
+          <dl class="totals" id="totals" hidden>
+            <div><dt>Items subtotal</dt><dd id="subtotalValue">&#8377;0</dd></div>
+            <div><dt>Delivery charge</dt><dd id="deliveryValue">&#8377;0</dd></div>
+            <div class="grand"><dt>Order total</dt><dd id="totalValue">&#8377;0</dd></div>
+          </dl>
+          <p class="hint" id="deliveryHint" hidden></p>
+          <p class="empty-msg" id="emptySummary">No items to summarise yet.</p>
+        </section>
+
+        <section class="panel" id="checkout" aria-labelledby="checkoutTitle">
+          <h2 id="checkoutTitle">Customer Details</h2>
+          <form id="orderForm" novalidate>
+            <div class="field">
+              <label for="custName">Full name *</label>
+              <input type="text" id="custName" name="name" autocomplete="name">
+              <small class="error" id="errName" role="alert"></small>
+            </div>
+            <div class="field">
+              <label for="custPhone">Mobile number *</label>
+              <input type="tel" id="custPhone" name="phone" inputmode="numeric" maxlength="10" placeholder="10-digit number" autocomplete="tel">
+              <small class="error" id="errPhone" role="alert"></small>
+            </div>
+            <div class="field">
+              <label for="custEmail">Email *</label>
+              <input type="email" id="custEmail" name="email" autocomplete="email">
+              <small class="error" id="errEmail" role="alert"></small>
+            </div>
+            <div class="field">
+              <label for="custAddress">Delivery address *</label>
+              <textarea id="custAddress" name="address" rows="3" autocomplete="street-address"></textarea>
+              <small class="error" id="errAddress" role="alert"></small>
+            </div>
+            <div class="field">
+              <label for="custPin">PIN code *</label>
+              <input type="text" id="custPin" name="pin" inputmode="numeric" maxlength="6" placeholder="6-digit PIN code" autocomplete="postal-code">
+              <small class="error" id="errPin" role="alert"></small>
+            </div>
+            <div class="field">
+              <label for="custPayment">Payment method (demo) *</label>
+              <select id="custPayment" name="payment">
+                <option value="">-- Select --</option>
+                <option value="Cash on Delivery">Cash on Delivery</option>
+                <option value="UPI on Delivery">UPI on Delivery</option>
+                <option value="Card on Delivery">Card on Delivery</option>
+              </select>
+              <small class="error" id="errPayment" role="alert"></small>
+            </div>
+            <small class="error form-error" id="errCart" role="alert"></small>
+            <button type="submit" class="btn btn-primary btn-block" id="placeOrderBtn">Submit Demonstration Order</button>
+          </form>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <!-- ORDER CONFIRMATION -->
+  <div class="modal" id="confirmModal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="tick" aria-hidden="true">&#10003;</div>
+      <h2 id="confirmTitle">Order Confirmed (Demo)</h2>
+      <p>Thank you, <strong id="confName"></strong>! Your demonstration order <strong id="confId"></strong> has been recorded on this page only.</p>
+      <table class="summary-table" id="confTable">
+        <thead><tr><th>Item</th><th>Qty</th><th>Subtotal</th></tr></thead>
+        <tbody id="confBody"></tbody>
+      </table>
+      <p class="conf-total">Total: <strong id="confTotal"></strong></p>
+      <p class="conf-meta" id="confMeta"></p>
+      <p class="hint">This is a frontend demonstration. No real order was placed and no payment was taken.</p>
+      <button type="button" class="btn btn-primary" id="closeModalBtn">Close</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Online Food Ordering Website &ndash; Level 2 Hackathon: Fundamentals of Web Development</p>
+      <p>Frontend demonstration built with HTML5, CSS3, JavaScript and Local Storage.</p>
+    </div>
+  </footer>
+
+  <script>
+/* ===== Online Food Ordering Website - Application Logic =====
+   Frontend demonstration only: no backend, no real orders, no payments. */
+
+"use strict";
+
+// ---------- 1. Data: food items (array of objects) ----------
+const FOODS = [
+  { id: 1,  name: "Chicken Biryani",      category: "Biryani",       price: 220, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZkZTY4YSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Y1OWUwYiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZyBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTE2NSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIwMCA5MHEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIzNSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PC9nPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxNzAiIHJ4PSIxMjAiIHJ5PSI0MCIgZmlsbD0iI2U5ZTJkNiIvPjxwYXRoIGQ9Ik04MCAxNzAgUTkwIDI1NSAyMDAgMjU1IFEzMTAgMjU1IDMyMCAxNzBaIiBmaWxsPSIjZjVmNWY1Ii8+PHBhdGggZD0iTTgwIDE3MCBRMjAwIDIxNSAzMjAgMTcwIFEyMDAgMTIwIDgwIDE3MFoiIGZpbGw9IiNmNGI5NDIiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxNjgiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIxNzUiIGN5PSIxNjAiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIyMDUiIGN5PSIxNjUiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIyMzUiIGN5PSIxNjAiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIyNjAiIGN5PSIxNzAiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzgiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSIxODAiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIxNjUiIGN5PSIxODAiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIyNDUiIGN5PSIxNzgiIHI9IjciIGZpbGw9IiNjMjQxMGMiLz48Y2lyY2xlIGN4PSIxODAiIGN5PSIxNTAiIHI9IjUiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxNTIiIHI9IjUiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSIxNTAiIHI9IjUiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIxNjAiIGN5PSIxNjAiIHI9IjQiIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjIiIHI9IjQiIGZpbGw9IiMxNmEzNGEiLz48L3N2Zz4=",      description: "Fragrant basmati rice cooked with tender chicken and spices." },
+  { id: 2,  name: "Veg Biryani",          category: "Biryani",       price: 160, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZjNjNyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZiYmYyNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZyBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTE2NSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIwMCA5MHEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIzNSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PC9nPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxNzAiIHJ4PSIxMjAiIHJ5PSI0MCIgZmlsbD0iI2U5ZTJkNiIvPjxwYXRoIGQ9Ik04MCAxNzAgUTkwIDI1NSAyMDAgMjU1IFEzMTAgMjU1IDMyMCAxNzBaIiBmaWxsPSIjZjVmNWY1Ii8+PHBhdGggZD0iTTgwIDE3MCBRMjAwIDIxNSAzMjAgMTcwIFEyMDAgMTIwIDgwIDE3MFoiIGZpbGw9IiNmMmM5NGMiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxNjgiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIxNzUiIGN5PSIxNjAiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyMDUiIGN5PSIxNjUiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyMzUiIGN5PSIxNjAiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyNjAiIGN5PSIxNzAiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzgiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSIxODAiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIxNjUiIGN5PSIxODAiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyNDUiIGN5PSIxNzgiIHI9IjciIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIxODAiIGN5PSIxNTAiIHI9IjUiIGZpbGw9IiNlYTU4MGMiLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxNTIiIHI9IjUiIGZpbGw9IiNlYTU4MGMiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSIxNTAiIHI9IjUiIGZpbGw9IiNlYTU4MGMiLz48Y2lyY2xlIGN4PSIxNjAiIGN5PSIxNjAiIHI9IjQiIGZpbGw9IiNkYzI2MjYiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjIiIHI9IjQiIGZpbGw9IiNkYzI2MjYiLz48L3N2Zz4=",          description: "Aromatic rice with mixed vegetables, mint and masala." },
+  { id: 3,  name: "Mutton Biryani",       category: "Biryani",       price: 300, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZDdhYSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2VhNTgwYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZyBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTE2NSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIwMCA5MHEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIzNSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PC9nPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxNzAiIHJ4PSIxMjAiIHJ5PSI0MCIgZmlsbD0iI2U5ZTJkNiIvPjxwYXRoIGQ9Ik04MCAxNzAgUTkwIDI1NSAyMDAgMjU1IFEzMTAgMjU1IDMyMCAxNzBaIiBmaWxsPSIjZjVmNWY1Ii8+PHBhdGggZD0iTTgwIDE3MCBRMjAwIDIxNSAzMjAgMTcwIFEyMDAgMTIwIDgwIDE3MFoiIGZpbGw9IiNlOGEzM2QiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxNjgiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIxNzUiIGN5PSIxNjAiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyMDUiIGN5PSIxNjUiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyMzUiIGN5PSIxNjAiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyNjAiIGN5PSIxNzAiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzgiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSIxODAiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIxNjUiIGN5PSIxODAiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyNDUiIGN5PSIxNzgiIHI9IjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIxODAiIGN5PSIxNTAiIHI9IjUiIGZpbGw9IiNiNDUzMDkiLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxNTIiIHI9IjUiIGZpbGw9IiNiNDUzMDkiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSIxNTAiIHI9IjUiIGZpbGw9IiNiNDUzMDkiLz48Y2lyY2xlIGN4PSIxNjAiIGN5PSIxNjAiIHI9IjQiIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxNjIiIHI9IjQiIGZpbGw9IiMxNmEzNGEiLz48L3N2Zz4=",       description: "Slow-cooked mutton layered with seasoned basmati rice." },
+  { id: 4,  name: "Masala Dosa",          category: "South Indian",  price: 80,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZjljMyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZkZTA0NyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTUwIiByeT0iNjIiIGZpbGw9IiNmYWZhZmEiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTI1IiByeT0iNDgiIGZpbGw9IiNlZWUiLz48cGF0aCBkPSJNNjAgMTg1IFEyMDAgODAgMzQwIDE4NSBRMjAwIDIxNSA2MCAxODVaIiBmaWxsPSIjZTBhNzNhIi8+PHBhdGggZD0iTTgwIDE4MiBRMjAwIDEwMCAzMjAgMTgyIiBzdHJva2U9IiNjOThhMWYiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPjxlbGxpcHNlIGN4PSIxOTAiIGN5PSIxNjgiIHJ4PSIzMCIgcnk9IjE0IiBmaWxsPSIjZjRkMzVlIi8+PGNpcmNsZSBjeD0iMzMwIiBjeT0iMjA1IiByPSIxNCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1NSIgY3k9IjE5NSIgcj0iMTIiIGZpbGw9IiNkYzI2MjYiLz48L3N2Zz4=",          description: "Crispy dosa filled with spiced potato, served with chutney." },
+  { id: 5,  name: "Idli Sambar",          category: "South Indian",  price: 60,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2YxZjVmOSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2NiZDVlMSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTUwIiByeT0iNjIiIGZpbGw9IiNmYWZhZmEiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTI1IiByeT0iNDgiIGZpbGw9IiNlZWUiLz48ZWxsaXBzZSBjeD0iMTQwIiBjeT0iMTcwIiByeD0iMzQiIHJ5PSIyNCIgZmlsbD0iI2ZmZiIvPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxNjAiIHJ4PSIzNCIgcnk9IjI0IiBmaWxsPSIjZmZmIi8+PGVsbGlwc2UgY3g9IjI2MCIgY3k9IjE3MCIgcng9IjM0IiByeT0iMjQiIGZpbGw9IiNmZmYiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMjA1IiByeD0iMjgiIHJ5PSIxMCIgZmlsbD0iI2Q5NzcwNiIvPjwvc3ZnPg==",          description: "Soft steamed idlis served with hot sambar and chutney." },
+  { id: 6,  name: "Medu Vada",            category: "South Indian",  price: 50,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZWRkNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZkYmE3NCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTUwIiByeT0iNjIiIGZpbGw9IiNmYWZhZmEiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTI1IiByeT0iNDgiIGZpbGw9IiNlZWUiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxNzAiIHI9IjMyIiBmaWxsPSIjYjQ1MzA5Ii8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMTcwIiByPSIxMCIgZmlsbD0iI2ZhZmFmYSIvPjxjaXJjbGUgY3g9IjIxNSIgY3k9IjE2MCIgcj0iMzIiIGZpbGw9IiNjMjY3MGYiLz48Y2lyY2xlIGN4PSIyMTUiIGN5PSIxNjAiIHI9IjEwIiBmaWxsPSIjZmFmYWZhIi8+PGNpcmNsZSBjeD0iMjY1IiBjeT0iMTg4IiByPSIzMCIgZmlsbD0iI2I0NTMwOSIvPjxjaXJjbGUgY3g9IjI2NSIgY3k9IjE4OCIgcj0iOSIgZmlsbD0iI2ZhZmFmYSIvPjwvc3ZnPg==",            description: "Crunchy urad dal vadas served with sambar." },
+  { id: 7,  name: "Ven Pongal",           category: "South Indian",  price: 70,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZjNjNyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZjZDM0ZCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZyBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTE2NSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIwMCA5MHEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIzNSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PC9nPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxNzAiIHJ4PSIxMjAiIHJ5PSI0MCIgZmlsbD0iI2U5ZTJkNiIvPjxwYXRoIGQ9Ik04MCAxNzAgUTkwIDI1NSAyMDAgMjU1IFEzMTAgMjU1IDMyMCAxNzBaIiBmaWxsPSIjZjVmNWY1Ii8+PHBhdGggZD0iTTgwIDE3MCBRMjAwIDIxNSAzMjAgMTcwIFEyMDAgMTIwIDgwIDE3MFoiIGZpbGw9IiNmN2U3YTEiLz48Y2lyY2xlIGN4PSIxNzAiIGN5PSIxNjAiIHI9IjUiIGZpbGw9IiM5MjQwMGUiLz48Y2lyY2xlIGN4PSIyMTAiIGN5PSIxNTUiIHI9IjUiIGZpbGw9IiM5MjQwMGUiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSIxNjUiIHI9IjUiIGZpbGw9IiM5MjQwMGUiLz48Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzIiIHI9IjUiIGZpbGw9IiM5MjQwMGUiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNDgiIHI9IjQiIGZpbGw9IiMxNmEzNGEiLz48Y2lyY2xlIGN4PSIyMjUiIGN5PSIxNzAiIHI9IjQiIGZpbGw9IiMxNmEzNGEiLz48L3N2Zz4=",               description: "Comforting rice and moong dal dish tempered with pepper and ghee." },
+  { id: 8,  name: "Veg Burger",           category: "Fast Food",     price: 99,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2RjZmNlNyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzg2ZWZhYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48cGF0aCBkPSJNMTEwIDE1MCBRMTEwIDcwIDIwMCA3MCBRMjkwIDcwIDI5MCAxNTBaIiBmaWxsPSIjZTBhNDNiIi8+PGcgZmlsbD0iI2ZkZTY4YSI+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMTA1IiByPSI0Ii8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iOTUiIHI9IjQiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSIxMDgiIHI9IjQiLz48L2c+PHBhdGggZD0iTTEwNSAxNjAgcTIwIDE4IDQwIDAgdDQwIDAgdDQwIDAgdDQwIDAgdDMwIDAgdjEwIGgtMTkweiIgZmlsbD0iIzIyYzU1ZSIvPjxyZWN0IHg9IjEwNSIgeT0iMTY4IiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiNhMTYyMDciLz48cmVjdCB4PSIxMDUiIHk9IjE5MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSIxMCIgcng9IjUiIGZpbGw9IiNmYWNjMTUiLz48cGF0aCBkPSJNMTEwIDIwMCBIMjkwIFEyOTAgMjQ1IDIwMCAyNDUgUTExMCAyNDUgMTEwIDIwMFoiIGZpbGw9IiNlMGE0M2IiLz48L3N2Zz4=",           description: "Crispy veg patty with lettuce, cheese and sauce in a soft bun." },
+  { id: 9,  name: "Chicken Burger",       category: "Fast Food",     price: 129, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZTJlMiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZjYTVhNSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48cGF0aCBkPSJNMTEwIDE1MCBRMTEwIDcwIDIwMCA3MCBRMjkwIDcwIDI5MCAxNTBaIiBmaWxsPSIjZTBhNDNiIi8+PGcgZmlsbD0iI2ZkZTY4YSI+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMTA1IiByPSI0Ii8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iOTUiIHI9IjQiLz48Y2lyY2xlIGN4PSIyNDAiIGN5PSIxMDgiIHI9IjQiLz48L2c+PHBhdGggZD0iTTEwNSAxNjAgcTIwIDE4IDQwIDAgdDQwIDAgdDQwIDAgdDQwIDAgdDMwIDAgdjEwIGgtMTkweiIgZmlsbD0iIzE2YTM0YSIvPjxyZWN0IHg9IjEwNSIgeT0iMTY4IiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjI0IiByeD0iMTIiIGZpbGw9IiM3YzJkMTIiLz48cmVjdCB4PSIxMDUiIHk9IjE5MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSIxMCIgcng9IjUiIGZpbGw9IiNmYWNjMTUiLz48cGF0aCBkPSJNMTEwIDIwMCBIMjkwIFEyOTAgMjQ1IDIwMCAyNDUgUTExMCAyNDUgMTEwIDIwMFoiIGZpbGw9IiNlMGE0M2IiLz48L3N2Zz4=",       description: "Juicy chicken patty with fresh lettuce and creamy mayo." },
+  { id: 10, name: "Margherita Pizza",     category: "Fast Food",     price: 249, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZTJlMiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZkYmE3NCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNjUiIHI9IjEwNSIgZmlsbD0iI2Q5NzcwNiIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjE2NSIgcj0iOTIiIGZpbGw9IiNlZjQ0NDQiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNjUiIHI9Ijg2IiBmaWxsPSIjZmRlNjhhIi8+PGcgZmlsbD0iI2RjMjYyNiI+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMTM1IiByPSIxMiIvPjxjaXJjbGUgY3g9IjIzMCIgY3k9IjEzMCIgcj0iMTIiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIxODUiIHI9IjEyIi8+PGNpcmNsZSBjeD0iMTcwIiBjeT0iMjAwIiByPSIxMiIvPjxjaXJjbGUgY3g9IjIwNSIgY3k9IjE2NSIgcj0iMTIiLz48L2c+PGcgZmlsbD0iIzE2YTM0YSI+PGVsbGlwc2UgY3g9IjE4NSIgY3k9IjExNSIgcng9IjgiIHJ5PSI0Ii8+PGVsbGlwc2UgY3g9IjIxNSIgY3k9IjIwNSIgcng9IjgiIHJ5PSI0Ii8+PGVsbGlwc2UgY3g9IjE0MCIgY3k9IjE3MCIgcng9IjgiIHJ5PSI0Ii8+PGVsbGlwc2UgY3g9IjI2MCIgY3k9IjE1MCIgcng9IjgiIHJ5PSI0Ii8+PC9nPjxwYXRoIGQ9Ik0yMDAgMTY1IEwyMDAgNjAgTTIwMCAxNjUgTDI5MCAyMTggTTIwMCAxNjUgTDExMCAyMTgiIHN0cm9rZT0iI2Q5NzcwNiIgc3Ryb2tlLXdpZHRoPSIzIi8+PC9zdmc+",     description: "Classic pizza with tomato sauce, mozzarella and basil." },
+  { id: 11, name: "French Fries",         category: "Fast Food",     price: 79,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZjljMyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZkZTA0NyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZyBmaWxsPSIjZmFjYzE1IiBzdHJva2U9IiNlYWIzMDgiIHN0cm9rZS13aWR0aD0iMiI+PHJlY3QgeD0iMTUwIiB5PSI3MCIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyMCIgcng9IjMiIHRyYW5zZm9ybT0icm90YXRlKC0xNSAxNTYgMTkwKSIvPjxyZWN0IHg9IjE2NyIgeT0iODIiIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMjAiIHJ4PSIzIiB0cmFuc2Zvcm09InJvdGF0ZSgtMTIgMTczIDE5MCkiLz48cmVjdCB4PSIxODQiIHk9Ijk0IiB3aWR0aD0iMTMiIGhlaWdodD0iMTIwIiByeD0iMyIgdHJhbnNmb3JtPSJyb3RhdGUoLTkgMTkwIDE5MCkiLz48cmVjdCB4PSIyMDEiIHk9IjcwIiB3aWR0aD0iMTMiIGhlaWdodD0iMTIwIiByeD0iMyIgdHJhbnNmb3JtPSJyb3RhdGUoLTYgMjA3IDE5MCkiLz48cmVjdCB4PSIyMTgiIHk9IjgyIiB3aWR0aD0iMTMiIGhlaWdodD0iMTIwIiByeD0iMyIgdHJhbnNmb3JtPSJyb3RhdGUoLTMgMjI0IDE5MCkiLz48cmVjdCB4PSIyMzUiIHk9Ijk0IiB3aWR0aD0iMTMiIGhlaWdodD0iMTIwIiByeD0iMyIgdHJhbnNmb3JtPSJyb3RhdGUoMCAyNDEgMTkwKSIvPjxyZWN0IHg9IjI1MiIgeT0iNzAiIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMjAiIHJ4PSIzIiB0cmFuc2Zvcm09InJvdGF0ZSgzIDI1OCAxOTApIi8+PHJlY3QgeD0iMjY5IiB5PSI4MiIgd2lkdGg9IjEzIiBoZWlnaHQ9IjEyMCIgcng9IjMiIHRyYW5zZm9ybT0icm90YXRlKDYgMjc1IDE5MCkiLz48cmVjdCB4PSIyODYiIHk9Ijk0IiB3aWR0aD0iMTMiIGhlaWdodD0iMTIwIiByeD0iMyIgdHJhbnNmb3JtPSJyb3RhdGUoOSAyOTIgMTkwKSIvPjxyZWN0IHg9IjMwMyIgeT0iNzAiIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMjAiIHJ4PSIzIiB0cmFuc2Zvcm09InJvdGF0ZSgxMiAzMDkgMTkwKSIvPjxyZWN0IHg9IjMyMCIgeT0iODIiIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMjAiIHJ4PSIzIiB0cmFuc2Zvcm09InJvdGF0ZSgxNSAzMjYgMTkwKSIvPjwvZz48cGF0aCBkPSJNMTM1IDE3MCBIMjY1IEwyNTAgMjU1IEgxNTBaIiBmaWxsPSIjZGMyNjI2Ii8+PHJlY3QgeD0iMTcwIiB5PSIxOTUiIHdpZHRoPSI2MCIgaGVpZ2h0PSIzMCIgcng9IjYiIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii45Ii8+PC9zdmc+",         description: "Golden crispy fries lightly salted." },
+  { id: 12, name: "Veg Meals",            category: "Meals & Curries", price: 120, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VjZmNjYiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2EzZTYzNSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTY1IiByeD0iMTYwIiByeT0iODUiIGZpbGw9IiMxNTgwM2QiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTY1IiByeD0iMTQ4IiByeT0iNzUiIGZpbGw9IiNiYmY3ZDAiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTY1IiByeD0iNjAiIHJ5PSIzNSIgZmlsbD0iI2ZmZiIvPjxnPjxjaXJjbGUgY3g9IjExMCIgY3k9IjE0MCIgcj0iMjIiIGZpbGw9IiNlYTU4MGMiLz48Y2lyY2xlIGN4PSIxNDUiIGN5PSIyMDUiIHI9IjIwIiBmaWxsPSIjNjVhMzBkIi8+PGNpcmNsZSBjeD0iMjcwIiBjeT0iMTM1IiByPSIyMiIgZmlsbD0iI2I0NTMwOSIvPjxjaXJjbGUgY3g9IjMwMCIgY3k9IjE4NSIgcj0iMjAiIGZpbGw9IiNkYzI2MjYiLz48Y2lyY2xlIGN4PSIyMzUiIGN5PSIyMTIiIHI9IjE4IiBmaWxsPSIjZWFiMzA4Ii8+PC9nPjwvc3ZnPg==",          description: "Full meals with rice, sambar, rasam, poriyal, kootu and curd." },
+  { id: 13, name: "Parotta with Salna",   category: "Meals & Curries", price: 90, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZWRkNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZiOTIzYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTUwIiByeT0iNjIiIGZpbGw9IiNmYWZhZmEiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTc1IiByeD0iMTI1IiByeT0iNDgiIGZpbGw9IiNlZWUiLz48ZWxsaXBzZSBjeD0iMTUwIiBjeT0iMTc1IiByeD0iNTUiIHJ5PSIzMCIgZmlsbD0iI2U1YjU2NyIvPjxlbGxpcHNlIGN4PSIxNTAiIGN5PSIxNjgiIHJ4PSI0NiIgcnk9IjI0IiBmaWxsPSIjZjBjOTdjIi8+PGVsbGlwc2UgY3g9IjE3MCIgY3k9IjE2MiIgcng9IjQ2IiByeT0iMjIiIGZpbGw9IiNlNWI1NjciLz48ZWxsaXBzZSBjeD0iMjcwIiBjeT0iMTg1IiByeD0iMzgiIHJ5PSIxOCIgZmlsbD0iI2I5MWMxYyIvPjxlbGxpcHNlIGN4PSIyNzAiIGN5PSIxODIiIHJ4PSIzMCIgcnk9IjEyIiBmaWxsPSIjZGMyNjI2Ii8+PC9zdmc+",       description: "Flaky layered parottas served with spicy salna." },
+  { id: 14, name: "Paneer Butter Masala", category: "Meals & Curries", price: 180, image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZWRkNSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZiOTIzYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZyBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTE2NSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIwMCA5MHEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PHBhdGggZD0iTTIzNSA5NXEtMTAgLTE1IDAgLTMwdDAgLTI1Ii8+PC9nPjxlbGxpcHNlIGN4PSIyMDAiIGN5PSIxNzAiIHJ4PSIxMjAiIHJ5PSI0MCIgZmlsbD0iI2U5ZTJkNiIvPjxwYXRoIGQ9Ik04MCAxNzAgUTkwIDI1NSAyMDAgMjU1IFEzMTAgMjU1IDMyMCAxNzBaIiBmaWxsPSIjZjVmNWY1Ii8+PHBhdGggZD0iTTgwIDE3MCBRMjAwIDIxNSAzMjAgMTcwIFEyMDAgMTIwIDgwIDE3MFoiIGZpbGw9IiNlYTU4MGMiLz48Y2lyY2xlIGN4PSIxNjUiIGN5PSIxNjAiIHI9IjExIiBmaWxsPSIjZmRlNjhhIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTUwIiByPSIxMSIgZmlsbD0iI2ZkZTY4YSIvPjxjaXJjbGUgY3g9IjIzNSIgY3k9IjE2MCIgcj0iMTEiIGZpbGw9IiNmZGU2OGEiLz48Y2lyY2xlIGN4PSIxOTAiIGN5PSIxNzUiIHI9IjExIiBmaWxsPSIjZmRlNjhhIi8+PGNpcmNsZSBjeD0iMjI1IiBjeT0iMTc4IiByPSIxMSIgZmlsbD0iI2ZkZTY4YSIvPjxjaXJjbGUgY3g9IjE4MCIgY3k9IjE2MiIgcj0iNSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjIxNSIgY3k9IjE2NSIgcj0iNSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==", description: "Soft paneer cubes in a rich, creamy tomato gravy." },
+  { id: 15, name: "Filter Coffee",        category: "Beverages",     price: 30,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZkZThkMCIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ExNjIwNyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMjUwIiByeD0iMTEwIiByeT0iMTQiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTIwIDEzMCBIMjgwIEwyNzAgMjIwIFEyMDAgMjUwIDEzMCAyMjBaIiBmaWxsPSIjZjVmNWY0Ii8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjEzMCIgcng9IjgwIiByeT0iMTIiIGZpbGw9IiM3ODM1MGYiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTMwIiByeD0iNjAiIHJ5PSI4IiBmaWxsPSIjYTE2MjA3Ii8+PHBhdGggZD0iTTI4MCAxNTAgcTQwIDAgMzUgMzUgcS01IDI1IC0zNSAyNSIgc3Ryb2tlPSIjZjVmNWY0IiBzdHJva2Utd2lkdGg9IjEyIiBmaWxsPSJub25lIi8+PGcgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjUiIGZpbGw9Im5vbmUiIG9wYWNpdHk9Ii44IiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik0xNzAgMTAwcS0xMCAtMTUgMCAtMzAiLz48cGF0aCBkPSJNMjAwIDEwMHEtMTAgLTE1IDAgLTMwIi8+PHBhdGggZD0iTTIzMCAxMDBxLTEwIC0xNSAwIC0zMCIvPjwvZz48L3N2Zz4=",        description: "Strong South Indian filter coffee with frothy milk." },
+  { id: 16, name: "Masala Tea",           category: "Beverages",     price: 25,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZjNjNyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Q5NzcwNiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMjUwIiByeD0iMTAwIiByeT0iMTIiIGZpbGw9IiNmZmYiLz48cGF0aCBkPSJNMTMwIDE0MCBIMjcwIEwyNjIgMjE1IFEyMDAgMjQwIDEzOCAyMTVaIiBmaWxsPSIjZmZmIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjE0MCIgcng9IjcwIiByeT0iMTAiIGZpbGw9IiNiNDUzMDkiLz48cGF0aCBkPSJNMjcwIDE1NSBxMzUgMCAzMCAzMCBxLTUgMjAgLTMwIDIwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMTAiIGZpbGw9Im5vbmUiLz48ZyBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIgb3BhY2l0eT0iLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCI+PHBhdGggZD0iTTE3NSAxMTBxLTEwIC0xNSAwIC0zMCIvPjxwYXRoIGQ9Ik0yMDUgMTEwcS0xMCAtMTUgMCAtMzAiLz48cGF0aCBkPSJNMjM1IDExMHEtMTAgLTE1IDAgLTMwIi8+PC9nPjwvc3ZnPg==",           description: "Hot tea brewed with ginger, cardamom and milk." },
+  { id: 17, name: "Fresh Lime Soda",      category: "Beverages",     price: 40,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2VjZmNjYiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2JlZjI2NCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48cGF0aCBkPSJNMTM1IDcwIEgyNjUgTDI0NSAyNTAgUTIwMCAyNjIgMTU1IDI1MFoiIGZpbGw9IiNlMGYyZmUiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik0xNDIgMTA1IEgyNTggTDI0MyAyNDUgUTIwMCAyNTYgMTU3IDI0NVoiIGZpbGw9IiNkOWY5OWQiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTA1IiByeD0iNTgiIHJ5PSI4IiBmaWxsPSIjYmVmMjY0Ii8+PGNpcmNsZSBjeD0iMTkwIiBjeT0iMTUwIiByPSI1IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjE1IiBjeT0iMTg1IiByPSI2IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTk1IiBjeT0iMjE1IiByPSI0IiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjY4IiBjeT0iODUiIHI9IjI4IiBmaWxsPSIjODRjYzE2Ii8+PGNpcmNsZSBjeD0iMjY4IiBjeT0iODUiIHI9IjIwIiBmaWxsPSIjZDlmOTlkIi8+PHBhdGggZD0iTTI2OCA2NVYxMDVNMjQ4IDg1SDI4OE0yNTQgNzFMMjgyIDk5TTI4MiA3MUwyNTQgOTkiIHN0cm9rZT0iIzg0Y2MxNiIgc3Ryb2tlLXdpZHRoPSIyIi8+PHJlY3QgeD0iMjE1IiB5PSI0MCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEyMCIgcng9IjQiIGZpbGw9IiNlZjQ0NDQiIHRyYW5zZm9ybT0icm90YXRlKDEyIDIyMCAxMDApIi8+PC9zdmc+",      description: "Refreshing lime soda, sweet or salt." },
+  { id: 18, name: "Mango Lassi",          category: "Beverages",     price: 60,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZlZjNjNyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZiYmYyNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48cGF0aCBkPSJNMTM1IDcwIEgyNjUgTDI0NSAyNTAgUTIwMCAyNjIgMTU1IDI1MFoiIGZpbGw9IiNlMGYyZmUiIG9wYWNpdHk9Ii44NSIvPjxwYXRoIGQ9Ik0xNDIgMTA1IEgyNTggTDI0MyAyNDUgUTIwMCAyNTYgMTU3IDI0NVoiIGZpbGw9IiNmYmJmMjQiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTA1IiByeD0iNTgiIHJ5PSI4IiBmaWxsPSIjZmRlNjhhIi8+PGNpcmNsZSBjeD0iMjcwIiBjeT0iOTUiIHI9IjI2IiBmaWxsPSIjZjU5ZTBiIi8+PHBhdGggZD0iTTI3MCA3MCBxMTUgLTE1IDI4IC04IiBzdHJva2U9IiMxNmEzNGEiIHN0cm9rZS13aWR0aD0iNiIgZmlsbD0ibm9uZSIvPjxyZWN0IHg9IjIwNSIgeT0iNDAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMzAiIHJ4PSI0IiBmaWxsPSIjMTZhMzRhIiB0cmFuc2Zvcm09InJvdGF0ZSgxMCAyMTAgMTAwKSIvPjwvc3ZnPg==",          description: "Chilled yoghurt drink blended with ripe mango." },
+  { id: 19, name: "Gulab Jamun",          category: "Desserts",      price: 50,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZTRlNiIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZkYTRhZiIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48ZWxsaXBzZSBjeD0iMjAwIiBjeT0iMTcwIiByeD0iMTIwIiByeT0iNDAiIGZpbGw9IiNlOWUyZDYiLz48cGF0aCBkPSJNODAgMTcwIFE5MCAyNTUgMjAwIDI1NSBRMzEwIDI1NSAzMjAgMTcwWiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGQ9Ik04MCAxNzAgUTIwMCAyMTUgMzIwIDE3MCBRMjAwIDEyMCA4MCAxNzBaIiBmaWxsPSIjZmJiZjI0Ii8+PGNpcmNsZSBjeD0iMTY1IiBjeT0iMTY1IiByPSIyOCIgZmlsbD0iIzdjMmQxMiIvPjxjaXJjbGUgY3g9IjIxNSIgY3k9IjE2MCIgcj0iMjgiIGZpbGw9IiM3YzJkMTIiLz48Y2lyY2xlIGN4PSIyNjAiIGN5PSIxNzAiIHI9IjI4IiBmaWxsPSIjN2MyZDEyIi8+PGNpcmNsZSBjeD0iMTU4IiBjeT0iMTU3IiByPSIxMCIgZmlsbD0iI2E4NTAxZiIvPjxjaXJjbGUgY3g9IjIwOCIgY3k9IjE1MiIgcj0iMTAiIGZpbGw9IiNhODUwMWYiLz48Y2lyY2xlIGN4PSIyNTMiIGN5PSIxNjIiIHI9IjEwIiBmaWxsPSIjYTg1MDFmIi8+PGNpcmNsZSBjeD0iMTgwIiBjeT0iMTQyIiByPSIzIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjM1IiBjeT0iMTQ1IiByPSIzIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMjA1IiBjeT0iMTgwIiByPSIzIiBmaWxsPSIjZmZmIi8+PC9zdmc+",          description: "Soft milk-solid balls soaked in warm sugar syrup (2 pieces)." },
+  { id: 20, name: "Ice Cream Cup",        category: "Desserts",      price: 70,  image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMzAwIiByb2xlPSJpbWciPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZjZTdmMyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Y5YThkNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2cpIi8+PGVsbGlwc2UgY3g9IjIwMCIgY3k9IjI2MiIgcng9IjEzMCIgcnk9IjE0IiBmaWxsPSIjMDAwIiBvcGFjaXR5PSIuMTIiLz48cGF0aCBkPSJNMTUwIDE1MCBIMjUwIEwyMDAgMjU1WiIgZmlsbD0iI2Q5NzcwNiIvPjxwYXRoIGQ9Ik0xNjUgMTY1IEwyMzUgMTY1IE0xNzUgMTg1IEwyMjUgMTg1IE0xODUgMjA1IEwyMTUgMjA1IiBzdHJva2U9IiNiNDUzMDkiIHN0cm9rZS13aWR0aD0iMyIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjEyMCIgcj0iNTAiIGZpbGw9IiNmOWE4ZDQiLz48Y2lyY2xlIGN4PSIxNjUiIGN5PSIxNDAiIHI9IjM4IiBmaWxsPSIjZmRlNjhhIi8+PGNpcmNsZSBjeD0iMjM1IiBjeT0iMTQwIiByPSIzOCIgZmlsbD0iI2E3OGJmYSIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjcyIiByPSIxMiIgZmlsbD0iI2RjMjYyNiIvPjwvc3ZnPg==",            description: "Three scoops of assorted ice cream with a cherry on top." }
+];
+
+const CART_KEY = "foodOrderingCart_v1";
+const DELIVERY_CHARGE = 30;
+const FREE_DELIVERY_ABOVE = 500;
+const MAX_QTY = 20;
+
+// ---------- 2. Application state ----------
+let cart = [];                 // array of { id, qty }
+let selectedCategory = "All";
+let searchText = "";
+
+// ---------- 3. DOM references ----------
+const $ = (id) => document.getElementById(id);
+const foodGrid = $("foodGrid"), noResults = $("noResults"), resultCount = $("resultCount");
+const searchInput = $("searchInput"), categoryFilters = $("categoryFilters");
+const cartList = $("cartList"), emptyCart = $("emptyCart"), cartFooter = $("cartFooter"), cartBadge = $("cartBadge");
+const summaryTable = $("summaryTable"), summaryBody = $("summaryBody"), totalsBox = $("totals");
+const emptySummary = $("emptySummary"), deliveryHint = $("deliveryHint");
+const orderForm = $("orderForm");
+
+// ---------- 4. Helper functions ----------
+const formatINR = (n) => "\u20B9" + Number(n).toLocaleString("en-IN");
+const findFood = (id) => FOODS.find((f) => f.id === id);
+
+function escapeHTML(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// ---------- 5. Local Storage ----------
+function saveCart() {
+  try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) { /* storage unavailable */ }
+}
+
+function loadCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CART_KEY));
+    if (!Array.isArray(saved)) return [];
+    // Keep only valid items (known id, whole quantity between 1 and MAX_QTY)
+    return saved
+      .filter((i) => i && findFood(i.id) && Number.isInteger(i.qty) && i.qty >= 1)
+      .map((i) => ({ id: i.id, qty: Math.min(i.qty, MAX_QTY) }));
+  } catch (e) {
+    return [];
+  }
+}
+
+// ---------- 6. Menu: display, search and filter ----------
+function getCategories() {
+  return ["All", ...new Set(FOODS.map((f) => f.category))];
+}
+
+function renderCategories() {
+  categoryFilters.innerHTML = getCategories()
+    .map((c) => `<button type="button" class="chip${c === selectedCategory ? " active" : ""}" data-category="${escapeHTML(c)}" aria-pressed="${c === selectedCategory}">${escapeHTML(c)}</button>`)
+    .join("");
+}
+
+function getVisibleFoods() {
+  const term = searchText.trim().toLowerCase();
+  return FOODS.filter((f) =>
+    (selectedCategory === "All" || f.category === selectedCategory) &&
+    f.name.toLowerCase().includes(term)
+  );
+}
+
+function renderMenu() {
+  const items = getVisibleFoods();
+  foodGrid.innerHTML = items.map((f) => `
+    <article class="food-card">
+      <img src="${f.image}" alt="${escapeHTML(f.name)}" loading="lazy">
+      <div class="food-body">
+        <span class="tag">${escapeHTML(f.category)}</span>
+        <h3>${escapeHTML(f.name)}</h3>
+        <p>${escapeHTML(f.description)}</p>
+        <div class="food-foot">
+          <span class="price">${formatINR(f.price)}</span>
+          <button type="button" class="btn btn-primary" data-add="${f.id}">Add to Cart</button>
+        </div>
+      </div>
+    </article>`).join("");
+  noResults.hidden = items.length > 0;
+  resultCount.textContent = `Showing ${items.length} of ${FOODS.length} items`;
+}
+
+// ---------- 7. Cart operations ----------
+function addToCart(id) {
+  const line = cart.find((i) => i.id === id);
+  if (line) { if (line.qty < MAX_QTY) line.qty += 1; }
+  else cart.push({ id, qty: 1 });
+  updateCart();
+}
+
+function changeQty(id, delta) {
+  const line = cart.find((i) => i.id === id);
+  if (!line) return;
+  line.qty += delta;
+  if (line.qty < 1) { removeFromCart(id); return; }
+  if (line.qty > MAX_QTY) line.qty = MAX_QTY;
+  updateCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter((i) => i.id !== id);
+  updateCart();
+}
+
+function clearCart() {
+  cart = [];
+  updateCart();
+}
+
+// ---------- 8. Calculations ----------
+function calculateTotals() {
+  const subtotal = cart.reduce((sum, i) => sum + findFood(i.id).price * i.qty, 0);
+  const delivery = subtotal === 0 || subtotal >= FREE_DELIVERY_ABOVE ? 0 : DELIVERY_CHARGE;
+  return { subtotal, delivery, total: subtotal + delivery, count: cart.reduce((s, i) => s + i.qty, 0) };
+}
+
+// ---------- 9. Render cart and order summary ----------
+function renderCart() {
+  const isEmpty = cart.length === 0;
+  emptyCart.hidden = !isEmpty;
+  cartFooter.hidden = isEmpty;
+  cartList.innerHTML = cart.map((i) => {
+    const f = findFood(i.id);
+    return `
+      <li class="cart-item">
+        <img src="${f.image}" alt="${escapeHTML(f.name)}">
+        <div>
+          <h3>${escapeHTML(f.name)}</h3>
+          <span class="unit">${formatINR(f.price)} each</span>
+        </div>
+        <div class="cart-right">
+          <div class="line-total">${formatINR(f.price * i.qty)}</div>
+          <div class="qty">
+            <button type="button" class="qty-btn" data-dec="${f.id}" aria-label="Decrease quantity of ${escapeHTML(f.name)}">&minus;</button>
+            <span class="qty-num" aria-live="polite">${i.qty}</span>
+            <button type="button" class="qty-btn" data-inc="${f.id}" aria-label="Increase quantity of ${escapeHTML(f.name)}">+</button>
+          </div>
+          <button type="button" class="remove-btn" data-remove="${f.id}">Remove</button>
+        </div>
+      </li>`;
+  }).join("");
+}
+
+function renderSummary() {
+  const t = calculateTotals();
+  const isEmpty = cart.length === 0;
+  summaryTable.hidden = isEmpty;
+  totalsBox.hidden = isEmpty;
+  emptySummary.hidden = !isEmpty;
+  deliveryHint.hidden = isEmpty;
+
+  summaryBody.innerHTML = cart.map((i) => {
+    const f = findFood(i.id);
+    return `<tr><td>${escapeHTML(f.name)}</td><td>${i.qty}</td><td>${formatINR(f.price)}</td><td>${formatINR(f.price * i.qty)}</td></tr>`;
+  }).join("");
+
+  $("subtotalValue").textContent = formatINR(t.subtotal);
+  $("deliveryValue").textContent = t.delivery === 0 && !isEmpty ? "FREE" : formatINR(t.delivery);
+  $("totalValue").textContent = formatINR(t.total);
+  deliveryHint.textContent = t.delivery > 0
+    ? `Add items worth ${formatINR(FREE_DELIVERY_ABOVE - t.subtotal)} more for free delivery.`
+    : "You have free delivery on this order.";
+}
+
+function updateCart() {
+  saveCart();
+  renderCart();
+  renderSummary();
+  cartBadge.textContent = calculateTotals().count;
+  if (cart.length > 0) $("errCart").textContent = "";
+}
+
+// ---------- 10. Form validation ----------
+function setError(fieldId, errId, message) {
+  const field = $(fieldId).closest(".field");
+  $(errId).textContent = message;
+  field.classList.toggle("invalid", message !== "");
+  return message === "";
+}
+
+function validateForm() {
+  const name = $("custName").value.trim();
+  const phone = $("custPhone").value.trim();
+  const email = $("custEmail").value.trim();
+  const address = $("custAddress").value.trim();
+  const pin = $("custPin").value.trim();
+  const payment = $("custPayment").value;
+  const results = [];
+
+  results.push(setError("custName", "errName",
+    name === "" ? "Please enter your name." :
+    !/^[A-Za-z][A-Za-z .'-]{1,49}$/.test(name) ? "Name must be 2-50 letters (letters, spaces, . ' - only)." : ""));
+
+  results.push(setError("custPhone", "errPhone",
+    phone === "" ? "Please enter your mobile number." :
+    !/^[6-9]\d{9}$/.test(phone) ? "Enter a valid 10-digit Indian mobile number starting with 6-9." : ""));
+
+  results.push(setError("custEmail", "errEmail",
+    email === "" ? "Please enter your email." :
+    !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? "Enter a valid email address (e.g. name@example.com)." : ""));
+
+  results.push(setError("custAddress", "errAddress",
+    address === "" ? "Please enter your delivery address." :
+    address.length < 10 ? "Address is too short (minimum 10 characters)." : ""));
+
+  results.push(setError("custPin", "errPin",
+    pin === "" ? "Please enter your PIN code." :
+    !/^[1-9]\d{5}$/.test(pin) ? "Enter a valid 6-digit PIN code." : ""));
+
+  results.push(setError("custPayment", "errPayment", payment === "" ? "Please select a payment method." : ""));
+
+  const cartOk = cart.length > 0;
+  $("errCart").textContent = cartOk ? "" : "Your cart is empty. Add at least one item before submitting.";
+  results.push(cartOk);
+
+  return results.every(Boolean);
+}
+
+// ---------- 11. Order submission and confirmation ----------
+function submitOrder(event) {
+  event.preventDefault();
+  if (!validateForm()) {
+    const firstBad = orderForm.querySelector(".field.invalid input, .field.invalid textarea, .field.invalid select");
+    if (firstBad) firstBad.focus();
+    return;
+  }
+  const t = calculateTotals();
+  const orderId = "DEMO-" + Date.now().toString().slice(-6);
+
+  $("confName").textContent = $("custName").value.trim();
+  $("confId").textContent = "#" + orderId;
+  $("confBody").innerHTML = cart.map((i) => {
+    const f = findFood(i.id);
+    return `<tr><td>${escapeHTML(f.name)}</td><td>${i.qty}</td><td>${formatINR(f.price * i.qty)}</td></tr>`;
+  }).join("");
+  $("confTotal").textContent = formatINR(t.total) + (t.delivery === 0 ? " (free delivery)" : ` (includes ${formatINR(t.delivery)} delivery)`);
+  $("confMeta").textContent = `Payment: ${$("custPayment").value} | PIN code: ${$("custPin").value.trim()}`;
+
+  $("confirmModal").hidden = false;
+  $("closeModalBtn").focus();
+
+  clearCart();          // order is "submitted": empty the cart and Local Storage copy
+  orderForm.reset();
+  orderForm.querySelectorAll(".field").forEach((f) => f.classList.remove("invalid"));
+}
+
+function closeModal() {
+  $("confirmModal").hidden = true;
+}
+
+// ---------- 12. Event listeners ----------
+searchInput.addEventListener("input", (e) => { searchText = e.target.value; renderMenu(); });
+
+categoryFilters.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-category]");
+  if (!btn) return;
+  selectedCategory = btn.dataset.category;
+  renderCategories();
+  renderMenu();
+});
+
+foodGrid.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-add]");
+  if (btn) addToCart(Number(btn.dataset.add));
+});
+
+cartList.addEventListener("click", (e) => {
+  const inc = e.target.closest("[data-inc]");
+  const dec = e.target.closest("[data-dec]");
+  const rem = e.target.closest("[data-remove]");
+  if (inc) changeQty(Number(inc.dataset.inc), 1);
+  else if (dec) changeQty(Number(dec.dataset.dec), -1);
+  else if (rem) removeFromCart(Number(rem.dataset.remove));
+});
+
+$("clearCartBtn").addEventListener("click", clearCart);
+orderForm.addEventListener("submit", submitOrder);
+$("closeModalBtn").addEventListener("click", closeModal);
+$("confirmModal").addEventListener("click", (e) => { if (e.target.id === "confirmModal") closeModal(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+// Phone and PIN fields accept digits only
+["custPhone", "custPin"].forEach((id) => {
+  $(id).addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, ""); });
+});
+
+// ---------- 13. Start-up ----------
+function init() {
+  cart = loadCart();          // restore cart saved in Local Storage
+  renderCategories();
+  renderMenu();
+  updateCart();
+}
+init();
+
+window.FOOD_APP_LOADED = true;   // tells index.html that the script loaded correctly
+
+</script>
+  <script>
+    if (!window.FOOD_APP_LOADED) { document.getElementById("loadError").hidden = false; }
+  </script>
+</body>
+</html>
